@@ -1,0 +1,168 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans:wght@300&family=Raleway:wght@500&family=Urbanist:wght@600;800&display=swap");
+
+/*
+font-family: 'Lato', sans-serif;
+font-family: 'Open Sans', sans-serif;
+font-family: 'Raleway', sans-serif;
+font-family: 'Urbanist', sans-serif;*/
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Lato", sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eceff1;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: space-between;
+  margin-bottom: 5em;
+  font-size: 18px;
+  padding: 15px;
+  max-width: 1400px;
+  margin: auto;
+  text-align: center;
+}
+
+header ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 1em;
+  list-style-type: none;
+}
+header div {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+
+#CoinB {
+  font-family: "Raleway", sans-serif;
+  color: #0052ff;
+  font-size: 32px;
+}
+
+.GetStart {
+  padding: 5px;
+}
+
+.GetStart h3 {
+  font-size: 16px;
+}
+
+.GetStart button {
+  padding: 10px 12px;
+  background-color: #0052ff;
+  border: 0;
+  border-radius: 5px;
+  color: white;
+  font-family: "Urbanist", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+section {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.front-phone-div {
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.front-phone-ch {
+  display: flex;
+}
+
+.front-phone-box {
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1em;
+}
+
+.front-phone-box h1 {
+  font-size: 4em;
+  font-family: "Railway", sans-serif;
+}
+
+.front-phone-box a {
+  font-size: 16px;
+  font-family: "Urbanist", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  color: #0052ff;
+}
+
+.front-phone-box a:hover {
+  color: #002f96;
+}
+
+.front-phone-box form input {
+  padding: 1.2em 0.8em;
+  font-size: 18px;
+  border-radius: 5px;
+  border: #eceff1 1px solid;
+}
+
+.front-phone-box form button {
+  padding: 1.2em 1.5em;
+  font-size: 18px;
+  background-color: #0052ff;
+  border: 0;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.table-div {
+  text-align: center;
+}
+
+.table-div {
+  text-align: left;
+  border: 1px #eceff1 solid;
+  width: 100%;
+  margin: 5em 0;
+  max-width: 1100px;
+  font-size: 22px;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 500;
+}
+
+.table-div button {
+  background-color: darkgreen;
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+  border: 0;
+  font-family: "Urbanist", sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.earnUp {
+  width: 50%;
+}
+
+.earnFet {
+  width: 50%;
+  text-align: right;
+  display: flex;
+  justify-content: space-around;
+}
+
+.earnFet ul {
+  list-style: none;
+}
