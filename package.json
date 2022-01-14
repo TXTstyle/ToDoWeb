@@ -4,7 +4,7 @@
   "description": "A todolist web server",
   "main": "index.js",
   "scripts": {
-    "drun": "nodemon -e js,ejs index.js "
+    "start": "nodemon -e js,ejs index.js "
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
   "homepage": "https://github.com/TXTstyle/ToDoWeb#readme",
   "dependencies": {
     "ejs": "^3.1.6",
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "mariadb": "^2.5.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
