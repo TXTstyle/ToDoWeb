@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="icon" href="/res/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="body">
+        <header>
+            <h1><a href="/">Forum</a></h1>
+        </header>
+        <section class="main-new">
+            <% if (messages.error) {%>
+                <p class="logEr"><%= messages.error %></p>
+            <% } %> 
+            <form action="/login" method="post" class="post-form">
+                <label for="email">Email:</label>
+                <input type="email" name="email1" id="email" required maxlength="45" minlength="3">
+                <label for="password" >Password:</label>
+                <input type="password" name="password1" id="password" required maxlength="100" minlength="3">
+                <button type="submit" id="sumbit1">Login</button>
+            </form>
+            <a class="logLink" href="/register">Register</a>
+        </section>
+    </div>
+</body>
+</html>

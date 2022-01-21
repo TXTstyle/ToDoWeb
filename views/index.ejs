@@ -24,9 +24,26 @@
                 <% }) %> 
             </div>
             <div class="side-panel-type">
-                <div class="info">
-                    <a href="/new">New Post</button>
-                </div>
+                <h4>Welcome <%= locals.user.username %>!</h4>
+                <% if (auth) { %>
+                    <div class="info">
+                        <form action="/logout?_method=DELETE" method="POST">
+                            <button type="submit">Logout</button>
+                        </form>
+                        <div>
+                            <a href="/new">New Post</a>
+                        </div>
+                    </div>    
+                <% } else { %> 
+                    <div class="info">
+                        <div>
+                            <a href="/login">Login</a>
+                        </div>
+                        <div>
+                            <a href="/register">Register</a>
+                        </div>
+                    </div>
+                <% } %> 
                 <div class="cred">
                     <a href="http://github.com/txtstyle" target="_blank">TXTstyle</a>
                 </div>
