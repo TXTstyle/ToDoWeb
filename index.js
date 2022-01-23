@@ -4,30 +4,24 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const app = express();
-const mariadb = require('mariadb');
-const pool = mariadb.createPool({
-    host: 'localhost',
-    user: process.env.user,
-    password: process.env.password,
-    database: process.env.database,
-    connectionLimit: 5
-});
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
+const myDB = require('./DB');
 
 const passport = require('passport');
 const initialize = require('./passport-config');
 initialize(passport, 
     async email => {
-        return await FindUser(email);
+        return await myDB.FindUser(email);
     },
     async id => {
-        return await FindUserId(id);
+        return await myDB.FindUserId(id);
     }); 
 
 const port = 5000;
+
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'));
@@ -43,90 +37,50 @@ app.use(session({
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
-//  ---  DB  ---
-
-let posts; // title: 25 username: 15 text: 250 email: 45 
-
-
-async function DB() {
-    try {     
-        let conn = await pool.getConnection();
-        let rows = await conn.query("SELECT * FROM feed ORDER BY id DESC");
-        posts = rows;
-        conn.release();
-        //console.log(posts[0].username);
-    } catch (err) {
-        throw err;
-    }
-} 
-
-async function FindUser(email) {
-    try {     
-        let conn = await pool.getConnection();
-        let rows = await conn.query(`SELECT * FROM users WHERE email = '${email}'`);
-        //console.log(rows[0].email);
-        conn.release();
-        return rows[0];
-    } catch (err) {
-        throw err;
-    }
-} 
-
-async function FindUserId(id) {
-    try {     
-        let conn = await pool.getConnection();
-        let rows = await conn.query(`SELECT * FROM users WHERE id = '${id}'`);
-        //console.log(rows[0].id);
-        conn.release();
-        return rows[0];
-    } catch (err) {
-        throw err;
-    }
-} 
-
-async function NewPost(title, username, text) {
-    try {
-        let conn = await pool.getConnection();
-        await conn.query(`INSERT INTO feed (title, username, text) VALUES ('${title}','${username}','${text}')`);
-        conn.release();
-    } catch (err) {
-        throw err;
-    }
-}
-
-
-async function NewUser(username, email, password) {
-    try {
-        let conn = await pool.getConnection();
-        await conn.query(`INSERT INTO users (username, email, password) VALUES ('${username}','${email}','${password}')`);
-        conn.release();
-    } catch (err) {
-        throw err;
-    }
-}
 
 //  ---  Routing  ---
 
 //  Root
-app.get('/', (req,res) => {
-    DB().then(() => {
-        if (req.isAuthenticated()) {
-            //console.log(req.user)
-            res.render('./index', {posts: posts, user: req.user, auth: true})
-            
-        } else {
-            res.render('./index', {posts: posts, user: {username: 'Guest'}, auth: false})
-        }
-    });
+app.get('/', GetDB, GetLikes, async (req,res) => {
+    
+    if (req.isAuthenticated()) {
+        const userLike = await myDB.GetLikeUser(req.user.id)
+        res.render('./index', {posts: res.posts, likes: res.likes, user: req.user, userLike: userLike, auth: true})
+        
+    } else {
+        res.render('./index', {posts: res.posts, likes: res.likes, user: {username: 'Guest'}, auth: false})
+    }
+    
     //console.log(posts);
 });
 
+// Like
+app.post('/like', GetDB, async (req, res) => {
+    const likesU = await myDB.GetLikeUser(req.user.id);
+    //console.log(likesU)
+    if (likesU[0] != undefined) {
+        const fin = likesU.some( p => p.postId == req.query.id);
+        if (!fin) {
+            console.log('liked post', req.query.id, fin);
+            myDB.NewLike(req.user.id, req.query.id);
+        } else {
+            console.log(fin);
+        }
+    }else {
+        console.log('liked post: null style!', req.query.id)
+        myDB.NewLike(req.user.id, req.query.id);
+    }
+    res.redirect('/');
+})
+
 //  New Post req 
-app.post('/new', (req, res) => {
-    console.log("NEW POST: ",req.body.title1, req.user.username, req.body.textarea1);
-    NewPost(req.body.title1, req.user.username, req.body.textarea1).then(() => {
-        res.redirect('/');   
-    });
+app.post('/new', async (req, res) => {
+    const user = await myDB.FindUser(req.user.email);
+    //console.log("NEW POST: ",req.body.title1, user.id, req.body.textarea1);
+    await myDB.NewPost(req.body.title1, user.id, req.body.textarea1)
+    const postL = await myDB.GetLatestPost();
+    await myDB.NewLike(user.id, postL.id);
+    res.redirect('/');
 });
 
 //  New Post
@@ -157,7 +111,7 @@ app.post('/register', async (req, res) => {
         const em = req.body.email1;
         //console.log(un,em,hp);
         
-        await NewUser(un,em,hp).then(() => {
+        await myDB.NewUser(un,em,hp).then(() => {
             res.redirect('/login');
         })
         
@@ -172,7 +126,13 @@ app.delete('/logout', (req, res) => {
     res.redirect('/')
 })
 
-/// ---  Misc  ---
+//  Debug
+app.get('/debug' /*, GetDB*/, (req, res) => {
+    //console.log(res.posts);
+    res.send('Debug');
+})
+
+/// ---  Middleware  ---
 
 function CheckAuth(req, res, next) {
     if(req.isAuthenticated()) {
@@ -188,6 +148,18 @@ function CheckNoAuth(req, res, next) {
 
     res.redirect('/');
 }
+
+async function GetDB(req, res, next) {
+    res.posts = await myDB.DB();
+    return next();
+}
+
+async function GetLikes(req, res, next) {
+    res.likes = await myDB.GetLikedPosts();
+    //console.log(res.likes);
+    return next();
+}
+
 
 // App Start
 app.listen(port, () => {

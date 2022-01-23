@@ -15,13 +15,7 @@
         </header>
         <section class="main">
             <div class="feed">
-                <% posts.forEach(element => { %>
-                 <div class="post-main">
-                     <h2><%= element.title %></h3>
-                     <h4><%= element.username %></h6>
-                     <p><%= element.text %></p>
-                 </div>
-                <% }) %> 
+                <%- include('./post'); %> 
             </div>
             <div class="side-panel-type">
                 <h4>Welcome <%= locals.user.username %>!</h4>
