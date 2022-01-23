@@ -2,7 +2,7 @@
     <div class="post-main">
         <h2><%= element.title %></h3>
         <h5>Likes: <%= likes[element.id-1].likes %></h5>
-        <h4><%= element.username %></h6>
+        <h4><a href="/user/<%= element.username %> "><%= element.username %></a></h6>
         <p><%= element.text %></p>
             <% if (auth && !userLike.some( p => p.postId == element.id)) { %>
                 <form action="/like?id=<%= element.id %> " method="post">

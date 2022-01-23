@@ -9,6 +9,7 @@ const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const myDB = require('./DB');
+const mw = require('./middleware');
 
 const passport = require('passport');
 const initialize = require('./passport-config');
@@ -19,6 +20,8 @@ initialize(passport,
     async id => {
         return await myDB.FindUserId(id);
     }); 
+
+const userRouter = require('./routes/user');
 
 const port = 5000;
 
@@ -36,12 +39,13 @@ app.use(session({
 }))
 app.use(passport.session())
 app.use(methodOverride('_method'))
+app.use('/user', userRouter)
 
 
 //  ---  Routing  ---
 
 //  Root
-app.get('/', GetDB, GetLikes, async (req,res) => {
+app.get('/', mw.GetDB, mw.GetLikes, async (req,res) => {
     
     if (req.isAuthenticated()) {
         const userLike = await myDB.GetLikeUser(req.user.id)
@@ -55,7 +59,7 @@ app.get('/', GetDB, GetLikes, async (req,res) => {
 });
 
 // Like
-app.post('/like', GetDB, async (req, res) => {
+app.post('/like', mw.GetDB, async (req, res) => {
     const likesU = await myDB.GetLikeUser(req.user.id);
     //console.log(likesU)
     if (likesU[0] != undefined) {
@@ -84,12 +88,12 @@ app.post('/new', async (req, res) => {
 });
 
 //  New Post
-app.get('/new', CheckNoAuth, (req, res) => {
+app.get('/new', mw.CheckNoAuth, (req, res) => {
     res.render('./new', {user: req.user});
 });
 
 //  Login
-app.get('/login', CheckAuth,(req, res) => {
+app.get('/login', mw.CheckAuth,(req, res) => {
     res.render('./login')
 })
 
@@ -100,7 +104,7 @@ app.post('/login', passport.authenticate('local', {
 }))
 
 //  Register
-app.get('/register', CheckAuth,(req, res) => {
+app.get('/register', mw.CheckAuth,(req, res) => {
     res.render('./register')
 })
 
@@ -132,34 +136,10 @@ app.get('/debug' /*, GetDB*/, (req, res) => {
     res.send('Debug');
 })
 
-/// ---  Middleware  ---
-
-function CheckAuth(req, res, next) {
-    if(req.isAuthenticated()) {
-        return res.redirect('/');
-    }
-    
-    next();
-}
-function CheckNoAuth(req, res, next) {
-    if(req.isAuthenticated()) {
-        return next();
-    }
-
-    res.redirect('/');
-}
-
-async function GetDB(req, res, next) {
-    res.posts = await myDB.DB();
+app.use((req, res, next) => {
+    res.status(404).render('./error', {error: '404: Page not found'});
     return next();
-}
-
-async function GetLikes(req, res, next) {
-    res.likes = await myDB.GetLikedPosts();
-    //console.log(res.likes);
-    return next();
-}
-
+})
 
 // App Start
 app.listen(port, () => {

@@ -36,6 +36,52 @@ async function GetLatestPost() {
     }
 }
 
+async function GetUsernames() {
+    try {     
+        let conn = await pool.getConnection();
+        let rows = await conn.query(`SELECT username, id FROM users`);
+        //console.log(rows[0].email);
+        conn.release();
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+} 
+
+async function GetUserByName(username) {
+    try {     
+        let conn = await pool.getConnection();
+        let rows = await conn.query(`select f.title, f.text, u.username, f.id from feed f inner join users u on u.id = f.userId where u.username='${username}' order by f.id desc`);
+        //console.log(rows[0].email);
+        conn.release();
+        return rows;
+    } catch (err) {
+        throw err;
+    }
+} 
+
+async function GetPostN(userId) {
+    try {
+        const conn = await pool.getConnection();
+        const rows = await conn.query(`select count(userId) c from feed where userId=${userId}`);
+        conn.release();
+        return rows[0];
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function GetLikedN(userId) {
+    try {
+        const conn = await pool.getConnection();
+        const rows = await conn.query(`select count(userId) c from likedPosts where userId=${userId}`);
+        conn.release();
+        return rows[0];
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function FindUser(email) {
     try {     
         let conn = await pool.getConnection();
@@ -127,4 +173,4 @@ async function NewUser(username, email, password) {
     }
 }
 
-module.exports = {DB, FindUser, FindUserId, GetLikesByUser, GetLikedPosts, GetLatestPost, GetLikeUser, NewLike, NewPost, NewUser};
+module.exports = {DB, GetUsernames, FindUser, GetLikedN, FindUserId, GetLikesByUser, GetPostN, GetLikedPosts, GetLatestPost, GetLikeUser, GetUserByName, NewLike, NewPost, NewUser};

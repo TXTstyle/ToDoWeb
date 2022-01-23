@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= user.username %></title>
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="icon" href="/res/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="body">
+        <header>
+            <h1><a href="/"><%= user.username %></a></h1>
+        </header>
+        <section class="main">
+            <div class="feed">
+                <%- include('./post'); %> 
+            </div>
+            <div class="side-panel-type side-panel-user">
+                <h4><%= locals.user.username %></h4>
+                <div class="info">
+                    <div>
+                        <ul>
+                            <li>User Posts: <%= locals.N.posts %> </li>
+                            <li>Likes Posts: <%= locals.N.likes %> </li>
+                        </ul>
+                    </div>
+                    <div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
